@@ -5,6 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from django.conf import settings
 from notchpay import NotchPay
+from .serializer import OrderSerializer,OrderProductSerializer
 
 
 # Create your views here.
@@ -14,6 +15,12 @@ notchpay = NotchPay(settings.NOTCHPAY_API_KEY)
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def make_payment(request):
+    serializer = OrderSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        product_serializer = OrderProductSerializer(request.data,many=True)
+        if product_serializer.is_valid():
+            product_serializer.save()
     try:
         amount = request.data.get('amount')
         if not amount:
@@ -26,7 +33,7 @@ def make_payment(request):
             'name': request.user.name,
         },
         'reference': f"order_{request.user.name}_{amount}",
-        'callback': request.build_absolute_uri('/payment/callback/'),
+        'callback': "api/v1/order/payment_callback",
         })
         print("Payment authorization URL: ", payment)
     
@@ -52,4 +59,5 @@ def payment_callback(request):
         return Response({'message': 'Payment failed'}, status=status.HTTP_400_BAD_REQUEST)
     
     
+
 

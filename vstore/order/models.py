@@ -4,10 +4,15 @@ from user.models import User
 
 # Create your models here.
 class Order(models.Model):
-    amount = models.FloatField()
-    status = models.CharField(max_length=50)
-    created_at = models.DateTimeField(auto_now_add=True)
+    amount = models.IntegerField()
+    order_status = models.CharField(max_length=50)
+    payment_status = models.CharField(max_length=50)
+    payment_method = models.CharField(max_length=50)
+    created_at = models.DateField(auto_now=True)
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    Street = models.CharField(max_length=50)
+    city = models.CharField(max_length=50)
+    country = models.CharField(max_length=50)
 
 class Orderproduct(models.Model):
       product_id = models.ForeignKey(Product,on_delete=models.CASCADE)

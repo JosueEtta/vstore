@@ -20,18 +20,16 @@ from django.conf.urls.static import static
 from django.conf import settings
 from user import urls
 from product import urls
-from payment import urls
-from rest_framework_simplejwt.views import (
-    TokenObtainPairView,
-    TokenRefreshView,
-)
+from order import urls
+from rest_framework_simplejwt.views import TokenRefreshView
+from user.views import CustomTokenObtainPairView
 
 urlpatterns = [
-      path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+      path('api/token/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
       path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
       path("api/v1/user/",include("user.urls")),
       path("api/v1/product/",include("product.urls")),
-      path("api/v1/payment/",include("payment.urls")),
+      path("api/v1/order/",include("order.urls")),
       path('admin/', admin.site.urls),
       path("api-auth/", include("rest_framework.urls", namespace="rest_framework")),
 ] + static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)

@@ -1,11 +1,15 @@
+from django.conf.locale import tr
 from rest_framework import serializers
 from .models import Order,Orderproduct
 
 class OrderSerializer(serializers.Serializer):
     amount = serializers.FloatField()
-    status = serializers.CharField(max_length=50)
+    status = serializers.CharField(max_length=50,allow_blank=True)
     created_at = serializers.DateTimeField()
-    user_id = serializers.IntegerField()
+    user_id = serializers.IntegerField(read_only=True)
+    street = serializers.CharField()
+    country = serializers.CharField()
+    city = serializers.CharField()
 
     def create(self, validated_data):
         new_order = Order.objects.create(**validated_data)
