@@ -58,11 +58,10 @@ export default function Payment() {
     <>
       <Navbar />
 
-      <main className="min-h-screen bg-slate-50 px-4 py-8 md:px-8 lg:px-12">
+      <main className="min-h-screen px-4 py-8 md:px-8 lg:px-12">
         <div className="mx-auto max-w-7xl">
           <div className="mb-6 flex items-center justify-between gap-3">
             <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.3em] text-amber-500">Checkout</p>
               <h1 className="text-2xl font-black text-slate-950 md:text-3xl">Payment details</h1>
             </div>
             <Link to="/products" className="rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-gray-700 hover:border-amber-300 hover:text-amber-600">
@@ -136,7 +135,7 @@ export default function Payment() {
               <section className="rounded-3xl bg-white p-5 shadow-sm ring-1 ring-gray-100 md:p-6">
                 <div className="mb-5">
                   <h2 className="text-xl font-black text-slate-950">Delivery and payment</h2>
-                  <p className="text-sm text-gray-500">Complete the order form to match your backend `Order` model.</p>
+                  <p className="text-sm text-gray-500">Fill in the form to send your order</p>
                 </div>
 
                 <form className="space-y-4" onSubmit={submitOrder}>
@@ -148,7 +147,7 @@ export default function Payment() {
                         name="Street"
                         value={form.Street}
                         onChange={handleFieldChange}
-                        className="mt-2 w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 outline-none transition focus:border-amber-400 focus:bg-white"
+                        className="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 outline-none transition focus:border-amber-400 focus:bg-white"
                         placeholder="Enter street"
                         required
                       />
@@ -161,7 +160,7 @@ export default function Payment() {
                         name="city"
                         value={form.city}
                         onChange={handleFieldChange}
-                        className="mt-2 w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 outline-none transition focus:border-amber-400 focus:bg-white"
+                        className="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 outline-none transition focus:border-amber-400 focus:bg-white"
                         placeholder="Enter city"
                         required
                       />
@@ -174,48 +173,25 @@ export default function Payment() {
                         name="country"
                         value={form.country}
                         onChange={handleFieldChange}
-                        className="mt-2 w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 outline-none transition focus:border-amber-400 focus:bg-white"
+                        className="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 outline-none transition focus:border-amber-400 focus:bg-white"
                         placeholder="Enter country"
                         required
                       />
                     </label>
-
+{/* 
                     <label className="block text-sm font-semibold text-slate-700">
                       Payment method
                       <select
                         name="payment_method"
                         value={form.payment_method}
                         onChange={handleFieldChange}
-                        className="mt-2 w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 outline-none transition focus:border-amber-400 focus:bg-white"
+                        className="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 outline-none transition focus:border-amber-400 focus:bg-white"
                       >
                         <option>Cash on delivery</option>
                         <option>MTN Mobile Money</option>
                         <option>Orange Money</option>
-                        <option>Card</option>
                       </select>
-                    </label>
-
-                    <label className="block text-sm font-semibold text-slate-700">
-                      Order status
-                      <input
-                        type="text"
-                        name="order_status"
-                        value={form.order_status}
-                        onChange={handleFieldChange}
-                        className="mt-2 w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 outline-none transition focus:border-amber-400 focus:bg-white"
-                      />
-                    </label>
-
-                    <label className="block text-sm font-semibold text-slate-700">
-                      Payment status
-                      <input
-                        type="text"
-                        name="payment_status"
-                        value={form.payment_status}
-                        onChange={handleFieldChange}
-                        className="mt-2 w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 outline-none transition focus:border-amber-400 focus:bg-white"
-                      />
-                    </label>
+                    </label> */}
                   </div>
 
                   <div className="rounded-2xl bg-amber-50 p-4 text-sm text-amber-900">

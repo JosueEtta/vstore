@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { useNavigate} from "react-router"
 
 
 export default function Signup() {
@@ -13,6 +14,7 @@ export default function Signup() {
     const [confirmPassowrdError, setConfirmPasswordError] = useState("");
     const [submitError, setSubmitError] = useState("");
     const [submitSuccess, setSubmitSuccess] = useState("");
+    const navigate = useNavigate()
 
     const validateName = (value) => {
         const trimmed = value.trim();
@@ -83,6 +85,7 @@ export default function Signup() {
             });
 
             setSubmitSuccess(res.data.message || "Account created successfully.");
+            navigate("/login")
         } catch (error) {
             const errors = error.response?.data?.errors;
             const message = errors?.email?.[0] || errors?.name?.[0] || errors?.password?.[0] || errors?.non_field_errors?.[0] || "Account creation failed.";

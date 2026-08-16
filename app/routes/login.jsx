@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router";
+import { setTokens } from "../api/axiosClient";
 
 
 export default function Login() {
@@ -8,6 +10,7 @@ export default function Login() {
     const [password, setPassword] = useState("");
     const [passwordError, setPasswordError] = useState("");
     const [submitError, setSubmitError] = useState("");
+    const navigate = useNavigate()
 
     const validateEmail = (value) => {
         const trimmed = value.trim();
@@ -54,9 +57,9 @@ export default function Login() {
             const refreshToken = res.data.refreshToken || res.data.refresh;
             const userRole = res.data.userRole || res.data.role || "client";
 
-            localStorage.setItem("accessToken", accessToken);
-            localStorage.setItem("refreshToken", refreshToken);
+            setTokens({ access: accessToken, refresh: refreshToken });
             localStorage.setItem("userRole", userRole);
+            navigate("/")
         } catch (error) {
             const serverErrors = error.response?.data?.errors;
             const detailMessage = error.response?.data?.detail || error.response?.data?.message;

@@ -26,7 +26,7 @@ import CardDashboard from "../component/dashboardcard";
 import Modal from "../component/modal"
 import NavDashboard from "../component/dashboardnav";
 import { showToast } from "../component/toaster";
-import axios from "axios";
+import api from "../api/axiosClient";
 
 
 const sidebarLinks = [
@@ -56,8 +56,11 @@ export default function AdminDashboard(){
      const [editingProduct,setEditingProduct] = useState(null)
      const [hiddenNav,sethiddenNav] = useState("hidden")
      const [products,setProducts] = useState([])
+     const [search,setSearch] = useState("")
      const [page,setPage] = useState(1)
      const [count,setCount] = useState(0)
+     const [productToDelete,setProductToDelete] = useState(null)
+     const [isDeleting,setIsDeleting] = useState(false)
      const [formData, setFormData] = useState({
          name: "",
          price: "",
@@ -66,12 +69,7 @@ export default function AdminDashboard(){
      })
      const [imagePreview, setImagePreview] = useState("")
 
-     function getAuthHeaders() {
-         const accessToken = localStorage.getItem("accessToken")
-         return accessToken ? { Authorization: `Bearer ${accessToken}` } : {}
-     }
-
-     async function fetchProducts() {
+      async function fetchProducts() {
          const accessToken = localStorage.getItem("accessToken")
          const userRole = localStorage.getItem("userRole")
 
@@ -82,9 +80,7 @@ export default function AdminDashboard(){
          }
 
          try {
-             const res = await axios.get(`http://127.0.0.1:8000/api/v1/product/?admin=true&page=${page}`, {
-                 headers: getAuthHeaders(),
-             })
+             const res = await api.get(`/api/v1/product/?admin=true&page=${page}`)
              setProducts(res.data.results)
              setCount(res.data.count)
          } catch (error) {
@@ -155,16 +151,14 @@ export default function AdminDashboard(){
 
         try {
             const requestConfig = {
-                headers: {
-                    ...getAuthHeaders(),
-                },
+                headers: {},
             }
 
             if (editingProduct) {
-                await axios.put(`http://127.0.0.1:8000/api/v1/product/${editingProduct.id}/`, payload, requestConfig)
+                await api.put(`/api/v1/product/${editingProduct.id}/`, payload, requestConfig)
                 showToast("Product updated successfully", "success")
             } else {
-                await axios.post("http://127.0.0.1:8000/api/v1/product/", payload, requestConfig)
+                await api.post("/api/v1/product/", payload, requestConfig)
                 showToast("Product created successfully", "success")
             }
 
@@ -177,21 +171,31 @@ export default function AdminDashboard(){
         }
     }
 
-    async function deleteProduct(product) {
-        if (!product?.id) return
+    function openDeleteProductModal(product) {
+        setProductToDelete(product)
+    }
 
-        const confirmed = window.confirm(`Delete ${product.name}?`)
-        if (!confirmed) return
+    function closeDeleteProductModal() {
+        if (isDeleting) return
+        setProductToDelete(null)
+    }
 
+    async function confirmDeleteProduct() {
+        if (!productToDelete?.id) return
+
+        setIsDeleting(true)
         try {
-            await axios.delete(`http://127.0.0.1:8000/api/v1/product/${product.id}/`, {
-                headers: getAuthHeaders(),
+            await api.delete(`/api/v1/product/${productToDelete.id}/`, {
+                headers: {},
             })
             showToast("Product deleted successfully", "success")
+            setProductToDelete(null)
             await fetchProducts()
         } catch (error) {
             const errorMessage = error?.response?.data?.message ?? "Unable to delete product"
             showToast(errorMessage, "error")
+        } finally {
+            setIsDeleting(false)
         }
     }
 
@@ -214,6 +218,17 @@ function swichNavHidden(){
         sethiddenNav("hidden")
         }
     }
+
+    async function searchProducts(){
+      const res =  await api.get(`/api/v1/product/?search=${search}`)
+      console.log("Search response is",res)
+       setProducts(res.data.results)
+       setCount(res.data.count)
+    }
+
+    useEffect(()=>{
+        searchProducts()
+    },[search])
     return(
      <>   
         <div className="min-h-screen flex flex-col  bg-white/55  text-gray-950">
@@ -298,6 +313,7 @@ function swichNavHidden(){
                                         <FontAwesomeIcon icon={faMagnifyingGlass} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
                                         <input
                                             type="search"
+                                            onChange={(e)=>setSearch(e.target.value)}
                                             placeholder="Search products..."
                                             className="h-12 w-full rounded-lg border border-gray-200 bg-white pl-11 pr-4 text-sm font-medium outline-none focus:border-amber-400"
                                         />
@@ -334,7 +350,7 @@ function swichNavHidden(){
                                                         >
                                                             <FontAwesomeIcon icon={faPen} />
                                                         </button>
-                                                        <button type="button" className="flex h-10 w-10 items-center justify-center rounded-lg border border-gray-200 text-gray-600 hover:border-red-300 hover:text-red-600" aria-label={`Delete ${product.name}`} onClick={() => deleteProduct(product)}>
+                                                        <button type="button" className="flex h-10 w-10 items-center justify-center rounded-lg border border-gray-200 text-gray-600 hover:border-red-300 hover:text-red-600" aria-label={`Delete ${product.name}`} onClick={() => openDeleteProductModal(product)}>
                                                             <FontAwesomeIcon icon={faTrash} />
                                                         </button>
                                                     </div>
@@ -475,6 +491,48 @@ function swichNavHidden(){
                     </button>
                 </div>
              </form>
+          </Modal>
+          <Modal isOpen={Boolean(productToDelete)} onClose={closeDeleteProductModal}>
+            <div className="p-6">
+                <div className="mb-5 flex items-start justify-between gap-4">
+                    <div>
+                        <p className="text-xs font-black uppercase tracking-[0.35em] text-red-500">Delete product</p>
+                        <h3 className="mt-1 text-2xl font-black text-gray-950">Remove {productToDelete?.name}?</h3>
+                    </div>
+                    <button
+                        type="button"
+                        className="flex h-9 w-9 items-center justify-center rounded-full border border-gray-200 text-gray-600 hover:border-red-300 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-50"
+                        onClick={closeDeleteProductModal}
+                        disabled={isDeleting}
+                        aria-label="Close delete confirmation"
+                    >
+                        <FontAwesomeIcon icon={faXmark} />
+                    </button>
+                </div>
+
+                <p className="text-sm font-medium text-gray-600">
+                    This action will permanently delete this product from your store inventory.
+                </p>
+
+                <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+                    <button
+                        type="button"
+                        className="rounded-lg border border-gray-200 px-5 py-2.5 text-sm font-black text-gray-700 hover:border-gray-300 disabled:cursor-not-allowed disabled:opacity-50"
+                        onClick={closeDeleteProductModal}
+                        disabled={isDeleting}
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        type="button"
+                        className="rounded-lg bg-red-600 px-5 py-2.5 text-sm font-black text-white shadow-sm shadow-red-200 hover:bg-red-700 disabled:cursor-not-allowed disabled:bg-red-300"
+                        onClick={confirmDeleteProduct}
+                        disabled={isDeleting}
+                    >
+                        {isDeleting ? "Deleting..." : "Delete Product"}
+                    </button>
+                </div>
+            </div>
           </Modal>
     </>
     )
