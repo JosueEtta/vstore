@@ -5,9 +5,9 @@ from user.models import User
 # Create your models here.
 class Order(models.Model):
     amount = models.IntegerField()
-    order_status = models.CharField(max_length=50)
-    payment_status = models.CharField(max_length=50)
-    payment_method = models.CharField(max_length=50)
+    order_status = models.CharField(max_length=50,default="not delivered")
+    payment_status = models.CharField(max_length=50,default="not payed")
+    payment_method = models.CharField(max_length=50,default="MTN")
     created_at = models.DateField(auto_now=True)
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     Street = models.CharField(max_length=50)

@@ -57,6 +57,7 @@ class ProductAPI(APIView):
            return Response(serializer.data,status=status.HTTP_200_OK)
        else:
         search = request.query_params.get("search")  
+        print("Search is:",search)
         search_results = Product.objects.all().order_by("price") 
         paginator = PageNumberPagination()
         paginator.page_size = 8       

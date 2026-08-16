@@ -12,6 +12,8 @@ class UserManager(BaseUserManager):
         if not password:
              raise ValueError("User must have a password")
 
+        extra_fields.setdefault("is_active", True)
+
         user = self.model(
             name=name,
             email=self.normalize_email(email),
@@ -24,7 +26,7 @@ class UserManager(BaseUserManager):
 
         return user
 
-    def create_superuser(self, email, password, name="wmail", role="admin", **extra_fields):
+    def create_superuser(self, email, password, name, role="admin", **extra_fields):
         extra_fields.setdefault("is_staff", True)
         extra_fields.setdefault("is_superuser", True)
         extra_fields.setdefault("is_active", True)
@@ -49,12 +51,12 @@ class User(AbstractBaseUser, PermissionsMixin):
     role = models.CharField(choices=ROLE_CHOICES, default="client")
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
+    is_superuser = models.BooleanField(default=False)
 
 
     USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = []
+    REQUIRED_FIELDS = ["name"]
 
     objects = UserManager()
-
 
 

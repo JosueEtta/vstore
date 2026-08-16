@@ -33,8 +33,11 @@ class CustomTokenObtainPairSerializer(serializers.Serializer):
     def validate(self, attrs):
         email = attrs.get('email')
         password = attrs.get('password')
+        print("email is :",email)
+        print("Password is :",password)
 
-        user = authenticate(request=self.context.get('request'), email=email, password=password)
+        user = authenticate(email=email, password=password)
+        print("User is:",user)
         if user is None:
             raise AuthenticationFailed('Invalid email or password.')
 
@@ -46,6 +49,5 @@ class CustomTokenObtainPairSerializer(serializers.Serializer):
             'accessToken': str(refresh.access_token),
             'refreshToken': str(refresh),
             'userRole': user.role,
-            'role': user.role,
         }
           
